@@ -34,6 +34,21 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function booted()
+    {
+        static::saved(function ($user) {
+            \Illuminate\Support\Facades\Cache::forget('seekers_total_count');
+            \Illuminate\Support\Facades\Cache::forget('seekers_pending_count');
+            \Illuminate\Support\Facades\Cache::forget('seekers_reviewed_count');
+        });
+
+        static::deleted(function ($user) {
+            \Illuminate\Support\Facades\Cache::forget('seekers_total_count');
+            \Illuminate\Support\Facades\Cache::forget('seekers_pending_count');
+            \Illuminate\Support\Facades\Cache::forget('seekers_reviewed_count');
+        });
+    }
+
     public function company() { return $this->hasOne(Company::class); }
     public function resumes() { return $this->hasMany(Resume::class); }
     public function applications() { return $this->hasMany(Application::class); }

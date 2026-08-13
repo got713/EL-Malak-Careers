@@ -39,12 +39,12 @@ class UserController extends Controller
             $query->where('application_status', $request->status);
         }
 
-        $totalUsersCount = User::role('seeker')->count();
-        $pendingUsersCount = User::role('seeker')->where('application_status', 'pending')->count();
-        $reviewedUsersCount = User::role('seeker')->where('application_status', 'reviewed')->count();
-        $cvCount = Resume::count();
+        $totalUsersCount = \Illuminate\Support\Facades\Cache::remember('seekers_total_count', 900, fn() => User::role('seeker')->count());
+        $pendingUsersCount = \Illuminate\Support\Facades\Cache::remember('seekers_pending_count', 900, fn() => User::role('seeker')->where('application_status', 'pending')->count());
+        $reviewedUsersCount = \Illuminate\Support\Facades\Cache::remember('seekers_reviewed_count', 900, fn() => User::role('seeker')->where('application_status', 'reviewed')->count());
+        $cvCount = \Illuminate\Support\Facades\Cache::remember('resumes_total_count', 900, fn() => Resume::count());
 
-        $users = $query->latest()->paginate(15)->withQueryString();
+        $users = $query->with('resumes')->latest()->paginate(15)->withQueryString();
         
         return view('admin.users.index', compact('users', 'totalUsersCount', 'pendingUsersCount', 'reviewedUsersCount', 'cvCount'));
     }
@@ -144,7 +144,7 @@ class UserController extends Controller
             $query->where('application_status', $request->status);
         }
 
-        $users = $query->latest()->get();
+        $users = $query->latest()->lazy();
 
         $filename = 'malak-careers-users-' . now()->format('Y-m-d') . '.csv';
 
@@ -258,7 +258,7 @@ class UserController extends Controller
             $query->where('application_status', $request->status);
         }
 
-        $users = $query->with('resumes')->get();
+        $users = $query->with('resumes')->lazy();
 
         $zip = new \ZipArchive();
         $zipFileName = 'malak-careers-cvs-' . now()->format('Y-m-d_H-i-s') . '.zip';
