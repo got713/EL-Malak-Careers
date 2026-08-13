@@ -9,7 +9,7 @@ class Company extends Model
     use HasFactory;
     
     protected $fillable = [
-        'user_id', 'name', 'logo', 'description', 'industry', 'website', 'location', 'is_verified', 'linkedin'
+        'user_id', 'name', 'logo', 'description', 'industry', 'website', 'location', 'linkedin'
     ];
 
     public function user() { return $this->belongsTo(User::class); }

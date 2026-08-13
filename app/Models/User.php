@@ -11,7 +11,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'phone', 'location', 'religion', 'nationality', 'education_status', 'education_degree', 'avatar', 'gender', 'birth_date', 'application_status', 'language_preference', 'is_active', 'google_id', 'google_token',
+        'first_name', 'last_name', 'email', 'password', 'phone', 'location', 'religion', 'nationality', 'education_status', 'education_degree', 'avatar', 'gender', 'birth_date', 'language_preference', 'google_id', 'google_token',
         'headline', 'linkedin_url', 'years_of_experience', 'recommendation_letter', 'worker_type',
         'confession_father', 'applicant_church', 'current_company', 'employment_status', 'application_date', 'languages', 'microsoft_office_skills', 'experience_details', 'last_salary',
         'admin_rating', 'admin_notes'

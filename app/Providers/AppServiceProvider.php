@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +26,17 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+
+        Password::defaults(function () {
+            $rule = Password::min(12)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols();
+
+            return $this->app->environment('production')
+                ? $rule->uncompromised()
+                : $rule;
+        });
     }
 }

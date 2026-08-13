@@ -44,9 +44,9 @@ class CompanyRegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'location' => $request->location,
-            // Companies don't need these but they are nullable or we can set defaults
-            'application_status' => 'reviewed', // Pre-reviewed or pending?
         ]);
+
+        $user->forceFill(['application_status' => 'reviewed'])->save();
 
         // Assign 'company' role
         $companyRole = Role::where('name', 'company')->first();
@@ -54,14 +54,15 @@ class CompanyRegisteredUserController extends Controller
             $user->assignRole($companyRole);
         }
 
-        Company::create([
+        $company = Company::create([
             'user_id' => $user->id,
             'name' => $request->company_name,
             'industry' => $request->industry,
             'linkedin' => $request->linkedin,
             'location' => $request->location,
-            'is_verified' => false,
         ]);
+
+        $company->forceFill(['is_verified' => false])->save();
 
         event(new Registered($user));
 

@@ -74,8 +74,9 @@ class UserController extends Controller
             'birth_date' => $request->birth_date,
             'education_status' => $request->education_status,
             'education_degree' => $request->education_degree,
-            'application_status' => 'pending',
         ]);
+
+        $user->forceFill(['application_status' => 'pending'])->save();
 
         $seekerRole = Role::where('name', 'seeker')->first();
         if ($seekerRole) {
@@ -99,7 +100,7 @@ class UserController extends Controller
 
     public function markReviewed(User $user)
     {
-        $user->update(['application_status' => 'reviewed']);
+        $user->forceFill(['application_status' => 'reviewed'])->save();
         return back()->with('success', __('User application marked as reviewed.'));
     }
 
