@@ -510,7 +510,23 @@
     "Reject/Unverify Company": "رفض / إلغاء تفعيل الشركة",
     "Company account rejected and set to pending.": "تم رفض حساب الشركة وإعادته لانتظار التفعيل.",
     "Reject": "رفض / اعتذار",
-    "Reset": "إعادة تعيين للانتظار"
+    "Reset": "إعادة تعيين",
+    "Reset Status": "إعادة تعيين للانتظار",
+    "Under Review": "تحت المراجعة",
+    "Companies": "الشركات",
+    "Pending Companies": "الشركات قيد التفعيل",
+    "Search (Name, Industry, Location)": "البحث (الاسم، مجال العمل، المحافظة)",
+    "Verification Status": "حالة التفعيل",
+    "Verified": "مفعلة",
+    "Pending": "قيد الانتظار",
+    "Hired": "تم التوظيف",
+    "No pending candidates": "لا يوجد مرشحين تحت المراجعة",
+    "No interviews scheduled": "لا توجد مقابلات مجدولة",
+    "No shortlisted candidates": "لا يوجد مرشحين مقبولين مبدئياً",
+    "No accepted candidates yet": "لا يوجد مرشحين مقبولين نهائياً بعد",
+    "No archived candidates": "لا يوجد مرشحين مرفوضين",
+    "Candidate": "مرشح",
+    "Candidate Status": "حالة المترشح"
 }
 
 

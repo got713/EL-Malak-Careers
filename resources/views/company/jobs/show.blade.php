@@ -343,7 +343,7 @@
                                             @method('PATCH')
                                             <input type="hidden" name="status" value="pending">
                                             <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
-                                                {{ __('Reset') }}
+                                                {{ __('Reset Status') }}
                                             </button>
                                         </form>
                                     </div>
