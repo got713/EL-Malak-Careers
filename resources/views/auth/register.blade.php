@@ -181,70 +181,79 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Job Seeker Form -->
-                <div x-cloak x-show="step === 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-8" x-transition:enter-end="opacity-100 transform translate-x-0" class="glass-card p-6 sm:p-8 mt-12 sm:mt-0 relative">
+                <!-- STEP 2: Job Seeker Form (Wizard Steps 2, 3, 4) -->
+                <div x-cloak x-show="step >= 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-8" x-transition:enter-end="opacity-100 transform translate-x-0" class="glass-card p-6 sm:p-8 mt-12 sm:mt-0 relative">
                     
-                    <button @click="step = 1" type="button" class="absolute top-6 start-6 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium bg-[#081B29] px-3 py-1.5 rounded-lg border border-[#23364A]">
+                    <!-- Back Button -->
+                    <button @click="if (step === 2) { step = 1 } else { step-- }" type="button" class="absolute top-6 start-6 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium bg-[#081B29] px-3 py-1.5 rounded-lg border border-[#23364A]">
                         <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                         {{ __('Back') }}
                     </button>
 
                     <div class="text-center mb-6 mt-10">
                         <h2 class="text-xl font-bold text-white mb-1">👤 {{ __('Job Seeker Registration') }}</h2>
-                        <p class="text-[#94A3B8] text-xs">{{ __('Fill in your details to create your personal account.') }}</p>
+                        <!-- Step Headings -->
+                        <p class="text-teal-400 text-xs font-bold" x-show="step === 2">{{ __('Step 1 of 3: Personal Information') }}</p>
+                        <p class="text-teal-400 text-xs font-bold" x-show="step === 3">{{ __('Step 2 of 3: Education & Church Details') }}</p>
+                        <p class="text-teal-400 text-xs font-bold" x-show="step === 4">{{ __('Step 3 of 3: Career Details & CV') }}</p>
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="h-1 bg-[#23364A] rounded-full overflow-hidden mb-6">
+                        <div class="h-full bg-gradient-to-r from-teal-500 to-teal-700 transition-all duration-500" :style="`width: ${((step - 1) / 3) * 100}%`"></div>
                     </div>
 
                     <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" class="flex flex-col">
                         @csrf
 
-                        <div class="space-y-6">
+                        <!-- STAGE 1: Personal Information & Credentials (Step 2) -->
+                        <div x-show="step === 2" data-step="2" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                
                                 <!-- First Name -->
                                 <div>
-                                    <label for="first_name" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('First Name') }}</label>
+                                    <label for="first_name" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('First Name') }} <span class="text-red-400">*</span></label>
                                     <input id="first_name" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="first_name" value="{{ old('first_name') }}" required autofocus autocomplete="given-name" />
                                     <x-input-error :messages="$errors->get('first_name')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Last Name -->
                                 <div>
-                                    <label for="last_name" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Last Name') }}</label>
+                                    <label for="last_name" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Last Name') }} <span class="text-red-400">*</span></label>
                                     <input id="last_name" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="last_name" value="{{ old('last_name') }}" required autocomplete="family-name" />
                                     <x-input-error :messages="$errors->get('last_name')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Email -->
                                 <div>
-                                    <label for="email" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Email') }}</label>
+                                    <label for="email" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Email') }} <span class="text-red-400">*</span></label>
                                     <input id="email" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" dir="ltr" />
                                     <x-input-error :messages="$errors->get('email')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Phone -->
                                 <div>
-                                    <label for="phone" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Phone Number') }}</label>
+                                    <label for="phone" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Phone Number') }} <span class="text-red-400">*</span></label>
                                     <input id="phone" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="phone" value="{{ old('phone') }}" required dir="ltr" />
                                     <x-input-error :messages="$errors->get('phone')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Password -->
                                 <div>
-                                    <label for="password" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Password') }}</label>
+                                    <label for="password" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Password') }} <span class="text-red-400">*</span></label>
                                     <input id="password" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="password" name="password" required autocomplete="new-password" dir="ltr" />
                                     <x-input-error :messages="$errors->get('password')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Confirm Password -->
                                 <div>
-                                    <label for="password_confirmation" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Confirm Password') }}</label>
+                                    <label for="password_confirmation" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Confirm Password') }} <span class="text-red-400">*</span></label>
                                     <input id="password_confirmation" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="password" name="password_confirmation" required autocomplete="new-password" dir="ltr" />
                                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Location -->
                                 <div>
-                                    <label for="location" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Location (City/Area)') }}</label>
+                                    <label for="location" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Location (City/Area)') }} <span class="text-red-400">*</span></label>
                                     <select id="location" name="location" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" required>
                                         <option value="" disabled selected class="bg-[#081B29]">{{ __('Select Location') }}</option>
                                         <option value="Cairo" class="bg-[#081B29]" {{ old('location') == 'Cairo' ? 'selected' : '' }}>{{ __('Cairo') }}</option>
@@ -257,7 +266,7 @@
 
                                 <!-- Religion -->
                                 <div>
-                                    <label for="religion" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Religion') }}</label>
+                                    <label for="religion" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Religion') }} <span class="text-red-400">*</span></label>
                                     <select id="religion" name="religion" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" required>
                                         <option value="" disabled selected class="bg-[#081B29]">{{ __('Select Religion') }}</option>
                                         <option value="Muslim" class="bg-[#081B29]" {{ old('religion') == 'Muslim' ? 'selected' : '' }}>{{ __('Muslim') }}</option>
@@ -269,21 +278,21 @@
 
                                 <!-- Nationality -->
                                 <div>
-                                    <label for="nationality" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Nationality') }}</label>
+                                    <label for="nationality" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Nationality') }} <span class="text-red-400">*</span></label>
                                     <input id="nationality" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="nationality" value="{{ old('nationality') }}" required />
                                     <x-input-error :messages="$errors->get('nationality')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Date of Birth -->
                                 <div>
-                                    <label for="birth_date" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Date of Birth (Age)') }}</label>
+                                    <label for="birth_date" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Date of Birth (Age)') }} <span class="text-red-400">*</span></label>
                                     <input id="birth_date" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="date" name="birth_date" value="{{ old('birth_date') }}" required />
                                     <x-input-error :messages="$errors->get('birth_date')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Gender -->
                                 <div>
-                                    <label for="gender" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Gender') }}</label>
+                                    <label for="gender" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Gender') }} <span class="text-red-400">*</span></label>
                                     <select id="gender" name="gender" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" required>
                                         <option value="" disabled selected class="bg-[#081B29]">{{ __('Select Gender') }}</option>
                                         <option value="male" class="bg-[#081B29]" {{ old('gender') == 'male' ? 'selected' : '' }}>{{ __('Male') }}</option>
@@ -292,37 +301,25 @@
                                     <x-input-error :messages="$errors->get('gender')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
-                                <!-- Target Job Title / Headline -->
-                                <div class="md:col-span-2">
-                                    <label for="headline" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Target Job Title / Headline') }} <span class="text-red-400">*</span></label>
-                                    <input id="headline" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="headline" value="{{ old('headline') }}" placeholder="{{ __('e.g. Software Engineer, Financial Accountant') }}" required />
-                                    <x-input-error :messages="$errors->get('headline')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
+                                <!-- Personal Photo -->
+                                <div class="md:col-span-2 p-5 border-2 border-dashed border-[#23364A] hover:border-teal-500 rounded-xl bg-[#081B29]/50 transition duration-300 flex flex-col items-center justify-center text-center group cursor-pointer relative">
+                                    <div class="w-10 h-10 bg-teal-900/30 text-teal-400 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    </div>
+                                    <span class="text-sm font-semibold text-white pointer-events-none">{{ __('Personal Photo') }} <span class="text-red-400">*</span></span>
+                                    <p class="text-xs text-slate-400 mt-1 pointer-events-none">{{ __('Upload a professional photo (JPG, JPEG, PNG, WEBP - Max 10MB)') }}</p>
+                                    <input id="avatar" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required />
+                                    <x-input-error :messages="$errors->get('avatar')" class="mt-2 ltr:text-left rtl:text-right text-xs" />
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Years of Experience -->
-                                <div>
-                                    <label for="years_of_experience" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Years of Experience (in years)') }} <span class="text-red-400">*</span></label>
-                                    <input id="years_of_experience" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="number" min="0" max="50" name="years_of_experience" value="{{ old('years_of_experience', 0) }}" placeholder="0" dir="ltr" required />
-                                    <x-input-error :messages="$errors->get('years_of_experience')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
-                                </div>
-
-                                <!-- LinkedIn URL -->
-                                <div>
-                                    <label for="linkedin_url" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('LinkedIn Profile URL (Optional)') }}</label>
-                                    <input id="linkedin_url" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="url" name="linkedin_url" value="{{ old('linkedin_url') }}" placeholder="https://linkedin.com/in/..." dir="ltr" />
-                                    <x-input-error :messages="$errors->get('linkedin_url')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
-                                </div>
-
-                                <!-- Skills -->
-                                <div class="md:col-span-2">
-                                    <label for="skills" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Your Skills (Comma Separated)') }}</label>
-                                    <input id="skills" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="skills" value="{{ old('skills') }}" placeholder="{{ __('e.g. PHP, Laravel, Marketing, Communication') }}" />
-                                    <x-input-error :messages="$errors->get('skills')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
-                                </div>
-
+                        <!-- STAGE 2: Education & Church Details (Step 3) -->
+                        <div x-show="step === 3" data-step="3" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Education Status -->
                                 <div class="md:col-span-2">
-                                    <label for="education_status" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Education Status') }}</label>
+                                    <label for="education_status" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Education Status') }} <span class="text-red-400">*</span></label>
                                     <select id="education_status" name="education_status" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" required>
                                         <option value="" disabled selected class="bg-[#081B29]">{{ __('Select Status') }}</option>
                                         <option value="studying" class="bg-[#081B29]" {{ old('education_status') == 'studying' ? 'selected' : '' }}>{{ __('Currently Studying') }}</option>
@@ -350,6 +347,39 @@
                                     <label for="applicant_church" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __("Applicant's Church") }} <span class="text-red-400">*</span></label>
                                     <input id="applicant_church" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="applicant_church" value="{{ old('applicant_church') }}" required placeholder="{{ __('e.g. St. Mark Church, Heliopolis') }}" />
                                     <x-input-error :messages="$errors->get('applicant_church')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STAGE 3: Career Details & CV (Step 4) -->
+                        <div x-show="step === 4" data-step="4" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Target Job Title / Headline -->
+                                <div class="md:col-span-2">
+                                    <label for="headline" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Target Job Title / Headline') }} <span class="text-red-400">*</span></label>
+                                    <input id="headline" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="headline" value="{{ old('headline') }}" placeholder="{{ __('e.g. Software Engineer, Financial Accountant') }}" required />
+                                    <x-input-error :messages="$errors->get('headline')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
+                                </div>
+
+                                <!-- Years of Experience -->
+                                <div>
+                                    <label for="years_of_experience" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Years of Experience (in years)') }} <span class="text-red-400">*</span></label>
+                                    <input id="years_of_experience" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="number" min="0" max="50" name="years_of_experience" value="{{ old('years_of_experience', 0) }}" placeholder="0" dir="ltr" required />
+                                    <x-input-error :messages="$errors->get('years_of_experience')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
+                                </div>
+
+                                <!-- LinkedIn URL -->
+                                <div>
+                                    <label for="linkedin_url" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('LinkedIn Profile URL (Optional)') }}</label>
+                                    <input id="linkedin_url" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="url" name="linkedin_url" value="{{ old('linkedin_url') }}" placeholder="https://linkedin.com/in/..." dir="ltr" />
+                                    <x-input-error :messages="$errors->get('linkedin_url')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
+                                </div>
+
+                                <!-- Skills -->
+                                <div class="md:col-span-2">
+                                    <label for="skills" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Your Skills (Comma Separated) (Optional)') }}</label>
+                                    <input id="skills" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="skills" value="{{ old('skills') }}" placeholder="{{ __('e.g. PHP, Laravel, Marketing, Communication') }}" />
+                                    <x-input-error :messages="$errors->get('skills')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Current Company Name -->
@@ -380,14 +410,14 @@
 
                                 <!-- Last Salary -->
                                 <div>
-                                    <label for="last_salary" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Last Salary') }} <span class="text-red-400">*</span></label>
-                                    <input id="last_salary" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="last_salary" value="{{ old('last_salary') }}" required placeholder="{{ __('e.g. 5000 EGP') }}" />
+                                    <label for="last_salary" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Last Salary (Optional)') }}</label>
+                                    <input id="last_salary" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" type="text" name="last_salary" value="{{ old('last_salary') }}" placeholder="{{ __('e.g. 5000 EGP') }}" />
                                     <x-input-error :messages="$errors->get('last_salary')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Languages -->
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-slate-300 mb-2 ltr:text-left rtl:text-right">{{ __('Languages') }}</label>
+                                    <label class="block text-sm font-medium text-slate-300 mb-2 ltr:text-left rtl:text-right">{{ __('Languages (Optional)') }}</label>
                                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#081B29]/30 p-3 rounded-xl border border-[#23364A]">
                                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer">
                                             <input type="checkbox" name="languages[]" value="Arabic" class="rounded border-[#23364A] bg-[#081B29] text-teal-500 focus:ring-teal-500" {{ (is_array(old('languages')) && in_array('Arabic', old('languages'))) ? 'checked' : '' }}>
@@ -411,11 +441,11 @@
 
                                 <!-- Microsoft Office - Computer Skills -->
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-slate-300 mb-2 ltr:text-left rtl:text-right">{{ __('Microsoft Office - Computer Skills') }} <span class="text-red-400">*</span></label>
+                                    <label class="block text-sm font-medium text-slate-300 mb-2 ltr:text-left rtl:text-right">{{ __('Microsoft Office - Computer Skills (Optional)') }}</label>
                                     <div class="flex items-center justify-between gap-2 bg-[#081B29]/30 p-3 rounded-xl border border-[#23364A]">
                                         @foreach([1, 2, 3, 4, 5] as $score)
                                             <label class="flex-grow cursor-pointer text-center">
-                                                <input type="radio" name="microsoft_office_skills" value="{{ $score }}" class="sr-only peer" {{ old('microsoft_office_skills') == $score ? 'checked' : '' }} required>
+                                                <input type="radio" name="microsoft_office_skills" value="{{ $score }}" class="sr-only peer" {{ old('microsoft_office_skills') == $score ? 'checked' : '' }}>
                                                 <div class="py-2 rounded-lg border border-[#23364A] bg-[#081B29]/50 text-slate-400 font-bold peer-checked:border-teal-500 peer-checked:bg-teal-900/20 peer-checked:text-white transition-all hover:border-teal-500/50">
                                                     {{ $score }}
                                                 </div>
@@ -445,20 +475,9 @@
 
                                 <!-- CV Description -->
                                 <div class="md:col-span-2">
-                                    <label for="cv_description" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Describe your CV / Write a brief summary') }}</label>
+                                    <label for="cv_description" class="block text-sm font-medium text-slate-300 mb-1.5 ltr:text-left rtl:text-right">{{ __('Describe your CV / Write a brief summary (Optional)') }}</label>
                                     <textarea id="cv_description" name="cv_description" rows="3" class="input-login w-full rounded-xl py-2.5 text-sm px-4 ltr:text-left rtl:text-right" placeholder="{{ __('Tell us a bit about your professional background, skills, or what you are looking for...') }}">{{ old('cv_description') }}</textarea>
                                     <x-input-error :messages="$errors->get('cv_description')" class="mt-1 ltr:text-left rtl:text-right text-xs" />
-                                </div>
-
-                                <!-- Personal Photo -->
-                                <div class="md:col-span-2 mt-2 p-5 border-2 border-dashed border-[#23364A] hover:border-teal-500 rounded-xl bg-[#081B29]/50 transition duration-300 flex flex-col items-center justify-center text-center group cursor-pointer relative">
-                                    <div class="w-10 h-10 bg-teal-900/30 text-teal-400 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    </div>
-                                    <span class="text-sm font-semibold text-white pointer-events-none">{{ __('Personal Photo') }} <span class="text-red-400">*</span></span>
-                                    <p class="text-xs text-slate-400 mt-1 pointer-events-none">{{ __('Upload a professional photo (JPG, JPEG, PNG, WEBP - Max 10MB)') }}</p>
-                                    <input id="avatar" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required />
-                                    <x-input-error :messages="$errors->get('avatar')" class="mt-2 ltr:text-left rtl:text-right text-xs" />
                                 </div>
 
                                 <!-- Recommendation Letter -->
@@ -476,12 +495,51 @@
 
                         <!-- Fixed Footer Actions -->
                         <div class="mt-6 pt-4 border-t border-[#23364A] flex flex-col gap-4">
-                            <button type="submit" class="btn-gradient w-full rounded-xl h-[46px] text-center text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-[#112235]">
+                            <!-- Next button for Step 2 -->
+                            <button x-show="step === 2" type="button" @click="
+                                let valid = true;
+                                let firstInvalid = null;
+                                $el.closest('form').querySelectorAll('[data-step=\'2\'] input[required], [data-step=\'2\'] select[required], [data-step=\'2\'] textarea[required]').forEach(f => {
+                                    if (!f.checkValidity()) {
+                                        valid = false;
+                                        if (!firstInvalid) firstInvalid = f;
+                                    }
+                                });
+                                if (firstInvalid) {
+                                    firstInvalid.reportValidity();
+                                } else {
+                                    step = 3;
+                                }
+                            " class="btn-gradient w-full rounded-xl h-[46px] text-center text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                {{ __('Next') }}
+                            </button>
+
+                            <!-- Next button for Step 3 -->
+                            <button x-show="step === 3" type="button" @click="
+                                let valid = true;
+                                let firstInvalid = null;
+                                $el.closest('form').querySelectorAll('[data-step=\'3\'] input[required], [data-step=\'3\'] select[required], [data-step=\'3\'] textarea[required]').forEach(f => {
+                                    if (!f.checkValidity()) {
+                                        valid = false;
+                                        if (!firstInvalid) firstInvalid = f;
+                                    }
+                                });
+                                if (firstInvalid) {
+                                    firstInvalid.reportValidity();
+                                } else {
+                                    step = 4;
+                                }
+                            " class="btn-gradient w-full rounded-xl h-[46px] text-center text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                {{ __('Next') }}
+                            </button>
+
+                            <!-- Create Account submit button (only Step 4) -->
+                            <button x-show="step === 4" type="submit" class="btn-gradient w-full rounded-xl h-[46px] text-center text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
                                 {{ __('Create Job Seeker Account') }}
                             </button>
                             
-                            <!-- Google Sign Up -->
-                            <a href="{{ route('auth.google') }}" class="w-full h-[46px] flex items-center justify-center rounded-xl bg-white text-slate-900 font-semibold text-sm transition-all hover:bg-slate-100 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#112235]">
+                            <!-- Google Sign Up (only on Step 2) -->
+                            <a x-show="step === 2" href="{{ route('auth.google') }}" class="w-full h-[46px] flex items-center justify-center rounded-xl bg-white text-slate-900 font-semibold text-sm transition-all hover:bg-slate-100 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white">
                                 <svg class="h-4 w-4 me-2" viewBox="0 0 24 24">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>

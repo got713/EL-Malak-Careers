@@ -462,7 +462,18 @@
     "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "نسيت كلمة المرور؟ لا مشكلة. أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة ضبط كلمة المرور واختيار كلمة جديدة.",
     "Email Password Reset Link": "إرسال رابط إعادة ضبط كلمة المرور",
     "Reset Password": "إعادة ضبط كلمة المرور",
-    "passwords.sent": "تم إرسال رابط إعادة ضبط كلمة المرور إلى بريدك الإلكتروني بنجاح!"
+    "passwords.sent": "تم إرسال رابط إعادة ضبط كلمة المرور إلى بريدك الإلكتروني بنجاح!",
+    "Step 1 of 3: Personal Information": "الخطوة 1 من 3: البيانات الشخصية",
+    "Step 2 of 3: Education & Church Details": "الخطوة 2 من 3: التعليم والبيانات الكنسية",
+    "Step 3 of 3: Career Details & CV": "الخطوة 3 من 3: البيانات المهنية والسيرة الذاتية",
+    "Next": "التالي",
+    "Back": "رجوع",
+    "Last Salary (Optional)": "آخر أجر / راتب (اختياري)",
+    "Microsoft Office - Computer Skills (Optional)": "مهارات الكمبيوتر - مايكروسوفت أوفيس (اختياري)",
+    "Languages (Optional)": "اللغات (اختياري)",
+    "Your Skills (Comma Separated) (Optional)": "مهاراتك (افصل بينها بفاصلة) (اختياري)",
+    "Describe your CV / Write a brief summary (Optional)": "صف سيرتك الذاتية / اكتب نبذة مختصرة عنك (اختياري)",
+    "Target Job Title / Headline (Optional)": "المسمى الوظيفي المستهدف / العنوان المهني (اختياري)"
 }
 
 

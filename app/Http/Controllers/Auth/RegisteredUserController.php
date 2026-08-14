@@ -62,9 +62,9 @@ class RegisteredUserController extends Controller
             'employment_status' => ['required', 'string', 'in:employed,unemployed,other'],
             'application_date' => ['required', 'date'],
             'languages' => ['nullable', 'array'],
-            'microsoft_office_skills' => ['required', 'integer', 'min:1', 'max:5'],
+            'microsoft_office_skills' => ['nullable', 'integer', 'min:1', 'max:5'],
             'experience_details' => ['required', 'string'],
-            'last_salary' => ['required', 'string', 'max:255'],
+            'last_salary' => ['nullable', 'string', 'max:255'],
         ], [
             'birth_date.before_or_equal' => 'You must be at least 18 years old to register.'
         ]);
