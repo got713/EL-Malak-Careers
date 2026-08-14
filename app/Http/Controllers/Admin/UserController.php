@@ -44,14 +44,14 @@ class UserController extends Controller
         $reviewedUsersCount = \Illuminate\Support\Facades\Cache::remember('seekers_reviewed_count', 900, fn() => User::role('seeker')->where('application_status', 'reviewed')->count());
         $cvCount = \Illuminate\Support\Facades\Cache::remember('resumes_total_count', 900, fn() => Resume::count());
 
-        $users = $query->with('resumes')->latest()->paginate(15)->withQueryString();
+        $users = $query->with('resumes')->withCount('applications')->latest()->paginate(15)->withQueryString();
         
         return view('admin.users.index', compact('users', 'totalUsersCount', 'pendingUsersCount', 'reviewedUsersCount', 'cvCount'));
     }
 
     public function show(User $user)
     {
-        $user->load('resumes');
+        $user->load(['resumes', 'applications.job.company']);
         return view('admin.users.show', compact('user'));
     }
 

@@ -110,15 +110,15 @@
                 </div>
 
                 <!-- KANBAN BOARD VIEW -->
-                <div x-show="viewMode === 'kanban'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Column 1: Pending (Under Review) -->
-                    <div class="glass-panel p-5 border-t-4 border-t-amber-500 flex flex-col h-full min-h-[450px]">
+                <div x-show="viewMode === 'kanban'" class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                    <!-- Column 1: Under Review (تحت المراجعة) -->
+                    <div class="glass-panel p-4 border-t-4 border-t-amber-500 flex flex-col h-full min-h-[450px]">
                         <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-                            <h4 class="font-bold text-amber-400 text-sm flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            <h4 class="font-bold text-amber-400 text-xs flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                                 {{ __('Under Review') }}
                             </h4>
-                            <span class="text-xs font-mono font-bold bg-amber-500/10 text-amber-400 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                            <span class="text-xs font-mono font-bold bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20">
                                 {{ $job->applications->where('status', 'pending')->count() }}
                             </span>
                         </div>
@@ -126,38 +126,31 @@
                         <div class="space-y-4 flex-grow">
                             @forelse($job->applications->where('status', 'pending') as $application)
                                 @php $candidate = $application->user; @endphp
-                                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 shadow-lg hover:border-amber-500/40 transition">
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-500 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md">
+                                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 shadow-lg hover:border-amber-500/40 transition">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-md">
                                             {{ mb_substr($candidate->first_name, 0, 1, 'UTF-8') }}
                                         </div>
-                                        <div>
-                                            <h5 class="font-bold text-white text-sm">{{ $candidate->name }}</h5>
-                                            <span class="text-xs text-slate-400 block">{{ $candidate->headline ?: __('Candidate') }}</span>
+                                        <div class="min-w-0">
+                                            <h5 class="font-bold text-white text-xs truncate">{{ $candidate->name }}</h5>
+                                            <span class="text-[10px] text-slate-400 block truncate">{{ $candidate->headline ?: __('Candidate') }}</span>
                                         </div>
                                     </div>
 
-                                    <div class="text-xs text-slate-300 space-y-1 mb-4">
-                                        <div><span class="text-slate-500">{{ __('Location') }}:</span> {{ $candidate->location }}</div>
-                                        <div><span class="text-slate-500">{{ __('Experience') }}:</span> {{ $candidate->years_of_experience }}</div>
-                                    </div>
-
-                                    <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
+                                    <div class="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
                                         <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
                                             @csrf
                                             @method('PATCH')
-                                            <input type="hidden" name="status" value="accepted">
-                                            <button type="submit" class="w-full bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                {{ __('Accept') }}
+                                            <input type="hidden" name="status" value="interview">
+                                            <button type="submit" class="w-full bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/30 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                                                {{ __('Interview') }}
                                             </button>
                                         </form>
                                         <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="status" value="rejected">
-                                            <button type="submit" class="w-full bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <button type="submit" class="w-full bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
                                                 {{ __('Reject') }}
                                             </button>
                                         </form>
@@ -171,14 +164,120 @@
                         </div>
                     </div>
 
-                    <!-- Column 2: Accepted / Interview -->
-                    <div class="glass-panel p-5 border-t-4 border-t-emerald-500 flex flex-col h-full min-h-[450px]">
+                    <!-- Column 2: Interview (مقابلة شخصية) -->
+                    <div class="glass-panel p-4 border-t-4 border-t-purple-500 flex flex-col h-full min-h-[450px]">
                         <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-                            <h4 class="font-bold text-emerald-400 text-sm flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                {{ __('Accepted for Interview') }}
+                            <h4 class="font-bold text-purple-400 text-xs flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                                {{ __('Interview') }}
                             </h4>
-                            <span class="text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                            <span class="text-xs font-mono font-bold bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/20">
+                                {{ $job->applications->where('status', 'interview')->count() }}
+                            </span>
+                        </div>
+
+                        <div class="space-y-4 flex-grow">
+                            @forelse($job->applications->where('status', 'interview') as $application)
+                                @php $candidate = $application->user; @endphp
+                                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 shadow-lg hover:border-purple-500/40 transition">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-xs shadow-md">
+                                            {{ mb_substr($candidate->first_name, 0, 1, 'UTF-8') }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h5 class="font-bold text-white text-xs truncate">{{ $candidate->name }}</h5>
+                                            <span class="text-[10px] text-purple-300 block font-semibold truncate">{{ __('Interview Scheduled') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
+                                        <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="shortlisted">
+                                            <button type="submit" class="w-full bg-cyan-600/20 hover:bg-cyan-600 text-cyan-400 hover:text-white border border-cyan-500/30 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                                                {{ __('Shortlist') }}
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="rejected">
+                                            <button type="submit" class="w-full bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                                                {{ __('Reject') }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-12 text-slate-500 text-xs">
+                                    {{ __('No interviews scheduled') }}
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Shortlisted (قبول مبدئي) -->
+                    <div class="glass-panel p-4 border-t-4 border-t-cyan-500 flex flex-col h-full min-h-[450px]">
+                        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+                            <h4 class="font-bold text-cyan-400 text-xs flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                                {{ __('Shortlisted') }}
+                            </h4>
+                            <span class="text-xs font-mono font-bold bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                                {{ $job->applications->where('status', 'shortlisted')->count() }}
+                            </span>
+                        </div>
+
+                        <div class="space-y-4 flex-grow">
+                            @forelse($job->applications->where('status', 'shortlisted') as $application)
+                                @php $candidate = $application->user; @endphp
+                                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 shadow-lg hover:border-cyan-500/40 transition">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 rounded-lg bg-cyan-600 text-white font-bold flex items-center justify-center text-xs shadow-md">
+                                            {{ mb_substr($candidate->first_name, 0, 1, 'UTF-8') }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h5 class="font-bold text-white text-xs truncate">{{ $candidate->name }}</h5>
+                                            <span class="text-[10px] text-cyan-300 block font-semibold truncate">{{ __('Shortlisted') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
+                                        <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="accepted">
+                                            <button type="submit" class="w-full bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                                                {{ __('Accept') }}
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="rejected">
+                                            <button type="submit" class="w-full bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                                                {{ __('Reject') }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-12 text-slate-500 text-xs">
+                                    {{ __('No shortlisted candidates') }}
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <!-- Column 4: Accepted (قبول نهائي) -->
+                    <div class="glass-panel p-4 border-t-4 border-t-emerald-500 flex flex-col h-full min-h-[450px]">
+                        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+                            <h4 class="font-bold text-emerald-400 text-xs flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                {{ __('Accepted') }}
+                            </h4>
+                            <span class="text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">
                                 {{ $job->applications->where('status', 'accepted')->count() }}
                             </span>
                         </div>
@@ -186,25 +285,21 @@
                         <div class="space-y-4 flex-grow">
                             @forelse($job->applications->where('status', 'accepted') as $application)
                                 @php $candidate = $application->user; @endphp
-                                <div class="bg-slate-900/90 border border-emerald-500/30 rounded-xl p-4 shadow-lg">
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <div class="w-10 h-10 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-md">
+                                <div class="bg-slate-900/90 border border-emerald-500/30 rounded-xl p-3 shadow-lg">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-xs shadow-md">
                                             {{ mb_substr($candidate->first_name, 0, 1, 'UTF-8') }}
                                         </div>
-                                        <div>
-                                            <h5 class="font-bold text-white text-sm">{{ $candidate->name }}</h5>
-                                            <span class="text-xs text-emerald-300 block font-semibold">{{ __('Interview Scheduled') }}</span>
+                                        <div class="min-w-0">
+                                            <h5 class="font-bold text-white text-xs truncate">{{ $candidate->name }}</h5>
+                                            <span class="text-[10px] text-emerald-300 block font-semibold truncate">{{ __('Hired') }}</span>
                                         </div>
                                     </div>
-
-                                    <div class="text-xs text-slate-300 space-y-1 mb-3">
-                                        <div><span class="text-slate-500">{{ __('Phone') }}:</span> <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $candidate->phone) }}" target="_blank" class="text-emerald-400 font-mono">{{ $candidate->phone }}</a></div>
-                                        <div><span class="text-slate-500">{{ __('Email') }}:</span> {{ $candidate->email }}</div>
+                                    <div class="text-[10px] text-slate-400 space-y-0.5 mb-2">
+                                        <div class="truncate"><span class="text-slate-500">{{ __('Phone') }}:</span> {{ $candidate->phone }}</div>
                                     </div>
-
                                     @if($candidate->resumes->count() > 0)
-                                        <a href="{{ asset('storage/' . $candidate->resumes->first()->file_path) }}" target="_blank" class="w-full bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        <a href="{{ route('resumes.download', $candidate->resumes->first()) }}" target="_blank" class="w-full bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
                                             {{ __('Download CV') }}
                                         </a>
                                     @endif
@@ -217,14 +312,14 @@
                         </div>
                     </div>
 
-                    <!-- Column 3: Rejected -->
-                    <div class="glass-panel p-5 border-t-4 border-t-rose-500 flex flex-col h-full min-h-[450px]">
+                    <!-- Column 5: Rejected (مرفوض / أرشيف) -->
+                    <div class="glass-panel p-4 border-t-4 border-t-rose-500 flex flex-col h-full min-h-[450px]">
                         <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-                            <h4 class="font-bold text-rose-400 text-sm flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                                {{ __('Rejected / Archived') }}
+                            <h4 class="font-bold text-rose-400 text-xs flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                {{ __('Rejected') }}
                             </h4>
-                            <span class="text-xs font-mono font-bold bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-full border border-rose-500/20">
+                            <span class="text-xs font-mono font-bold bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded-full border border-rose-500/20">
                                 {{ $job->applications->where('status', 'rejected')->count() }}
                             </span>
                         </div>
@@ -232,15 +327,25 @@
                         <div class="space-y-4 flex-grow">
                             @forelse($job->applications->where('status', 'rejected') as $application)
                                 @php $candidate = $application->user; @endphp
-                                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 opacity-75">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-sm border border-slate-700">
+                                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 opacity-75">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs border border-slate-700">
                                             {{ mb_substr($candidate->first_name, 0, 1, 'UTF-8') }}
                                         </div>
-                                        <div>
-                                            <h5 class="font-bold text-slate-300 text-sm line-through">{{ $candidate->name }}</h5>
-                                            <span class="text-xs text-rose-400 block">{{ __('Archived') }}</span>
+                                        <div class="min-w-0">
+                                            <h5 class="font-bold text-slate-400 text-xs line-through truncate">{{ $candidate->name }}</h5>
+                                            <span class="text-[10px] text-rose-400 block font-semibold truncate">{{ __('Rejected') }}</span>
                                         </div>
+                                    </div>
+                                    <div class="pt-2 border-t border-slate-800/80">
+                                        <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="pending">
+                                            <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                                                {{ __('Reset') }}
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             @empty
@@ -349,37 +454,17 @@
                                 <!-- Application Status / Feedback -->
                                 <div class="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 mb-1">
                                     <span class="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2 text-center">{{ __('Candidate Status') }}</span>
-                                    
-                                    @if($application->status === 'pending')
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="accepted">
-                                                <button type="submit" class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 px-2 py-2 rounded-lg text-xs font-bold transition-all shadow-sm" title="{{ __('Accept & Interview') }}">
-                                                    <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="rejected">
-                                                <button type="submit" class="w-full bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 px-2 py-2 rounded-lg text-xs font-bold transition-all shadow-sm" title="{{ __('Reject') }}">
-                                                    <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    @elseif($application->status === 'accepted')
-                                        <div class="w-full bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold text-center flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.3)]">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            {{ __('Accepted') }}
-                                        </div>
-                                    @elseif($application->status === 'rejected')
-                                        <div class="w-full bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-bold text-center flex items-center justify-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            {{ __('Rejected') }}
-                                        </div>
-                                    @endif
+                                    <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
+                                        @csrf
+                                        @method('PATCH')
+                                        <select name="status" onchange="this.form.submit()" class="w-full bg-[#081B29] border border-slate-700 rounded-lg text-xs text-slate-300 py-1.5 focus:outline-none focus:border-indigo-500">
+                                            <option value="pending" {{ $application->status === 'pending' ? 'selected' : '' }}>{{ __('Under Review') }}</option>
+                                            <option value="interview" {{ $application->status === 'interview' ? 'selected' : '' }}>{{ __('Interview') }}</option>
+                                            <option value="shortlisted" {{ $application->status === 'shortlisted' ? 'selected' : '' }}>{{ __('Shortlisted') }}</option>
+                                            <option value="accepted" {{ $application->status === 'accepted' ? 'selected' : '' }}>{{ __('Accepted') }}</option>
+                                            <option value="rejected" {{ $application->status === 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                                        </select>
+                                    </form>
                                 </div>
 
                                 @if($application->resume_id && $candidate->resumes->where('id', $application->resume_id)->first())

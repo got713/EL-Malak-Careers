@@ -90,11 +90,13 @@ class ComprehensiveSecurityTest extends TestCase
         $user1 = User::factory()->create();
         $user1->assignRole('company');
         $company1 = Company::create(['user_id' => $user1->id, 'name' => 'Comp 1', 'industry' => 'Tech', 'location' => 'Cairo']);
+        $company1->forceFill(['is_verified' => true])->save();
         $job1 = Job::create(['company_id' => $company1->id, 'title' => 'Dev 1', 'description' => 'Desc', 'requirements' => 'Req', 'type' => 'full-time', 'location' => 'Cairo', 'vacancies' => 1, 'experience_years' => '1']);
 
         $user2 = User::factory()->create();
         $user2->assignRole('company');
         $company2 = Company::create(['user_id' => $user2->id, 'name' => 'Comp 2', 'industry' => 'Finance', 'location' => 'Alex']);
+        $company2->forceFill(['is_verified' => true])->save();
 
         // Company 2 attempts to edit Company 1's job
         $response = $this->actingAs($user2)->get(route('company.jobs.edit', $job1));
@@ -118,6 +120,7 @@ class ComprehensiveSecurityTest extends TestCase
         $user1 = User::factory()->create();
         $user1->assignRole('company');
         $company1 = Company::create(['user_id' => $user1->id, 'name' => 'Comp 1', 'industry' => 'Tech', 'location' => 'Cairo']);
+        $company1->forceFill(['is_verified' => true])->save();
         $job1 = Job::create(['company_id' => $company1->id, 'title' => 'Dev 1', 'description' => 'Desc', 'requirements' => 'Req', 'type' => 'full-time', 'location' => 'Cairo', 'vacancies' => 1, 'experience_years' => '1']);
 
         $seeker = User::factory()->create();
@@ -126,6 +129,7 @@ class ComprehensiveSecurityTest extends TestCase
         $user2 = User::factory()->create();
         $user2->assignRole('company');
         $company2 = Company::create(['user_id' => $user2->id, 'name' => 'Comp 2', 'industry' => 'Finance', 'location' => 'Alex']);
+        $company2->forceFill(['is_verified' => true])->save();
 
         $response = $this->actingAs($user2)->patch(route('company.applications.status', $application), [
             'status' => 'accepted',

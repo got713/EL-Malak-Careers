@@ -10,6 +10,16 @@ use App\Http\Requests\UpdateJobRequest;
 
 class JobController extends Controller
 {
+    private function checkCompanyVerification()
+    {
+        $company = auth()->user()->company;
+        if (!$company || !$company->is_verified) {
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                redirect()->route('dashboard')->with('error', __('Your company account is pending approval by the administration team. You will be able to post jobs once approved.'))
+            );
+        }
+    }
+
     public function index()
     {
         $company = auth()->user()->company;
@@ -19,11 +29,13 @@ class JobController extends Controller
 
     public function create()
     {
+        $this->checkCompanyVerification();
         return view('company.jobs.create');
     }
 
     public function store(StoreJobRequest $request)
     {
+        $this->checkCompanyVerification();
         $company = auth()->user()->company;
 
         Job::create([
@@ -55,6 +67,7 @@ class JobController extends Controller
 
     public function edit(Job $job)
     {
+        $this->checkCompanyVerification();
         // Ensure the company owns this job
         if ($job->company_id !== auth()->user()->company->id) {
             abort(403, 'Unauthorized action.');
@@ -65,6 +78,12 @@ class JobController extends Controller
 
     public function update(UpdateJobRequest $request, Job $job)
     {
+        $this->checkCompanyVerification();
+        // Ensure the company owns this job
+        if ($job->company_id !== auth()->user()->company->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $job->update([
             'title' => $request->title,
             'description' => $request->description,

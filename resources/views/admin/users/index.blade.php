@@ -166,6 +166,7 @@
                                 <th class="p-4 font-semibold">{{ __('Name') }}</th>
                                 <th class="p-4 font-semibold">{{ __('Phone') }}</th>
                                 <th class="p-4 font-semibold">{{ __('Date') }}</th>
+                                <th class="p-4 font-semibold text-center">{{ __('Nominations') }}</th>
                                 <th class="p-4 font-semibold">{{ __('Status') }}</th>
                                 <th class="p-4 font-semibold ltr:text-right rtl:text-left">{{ __('Actions') }}</th>
                             </tr>
@@ -192,6 +193,15 @@
                                     @endif
                                 </td>
                                 <td class="p-4 text-slate-400 font-mono text-xs">{{ $user->created_at->format('M d, Y') }}</td>
+                                <td class="p-4 text-center">
+                                    @if($user->applications_count > 0)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono">
+                                            {{ $user->applications_count }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-500 text-xs">-</span>
+                                    @endif
+                                </td>
                                 <td class="p-4">
                                     @if($user->application_status === 'pending')
                                         <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">{{ __('Pending') }}</span>

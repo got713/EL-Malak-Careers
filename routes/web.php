@@ -53,6 +53,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('/jobs/{job}', [\App\Http\Controllers\Admin\JobController::class, 'destroy'])->name('jobs.destroy');
     Route::get('/jobs/{job}/nominate', [\App\Http\Controllers\Admin\JobController::class, 'nominate'])->name('jobs.nominate');
     Route::post('/jobs/{job}/nominate', [\App\Http\Controllers\Admin\JobController::class, 'storeNominations'])->name('jobs.nominate.store');
+
+    Route::get('/companies', [\App\Http\Controllers\Admin\CompanyController::class, 'index'])->name('companies.index');
+    Route::patch('/companies/{company}/verify', [\App\Http\Controllers\Admin\CompanyController::class, 'verify'])->name('companies.verify');
+    Route::patch('/companies/{company}/reject', [\App\Http\Controllers\Admin\CompanyController::class, 'reject'])->name('companies.reject');
+    Route::delete('/companies/{company}', [\App\Http\Controllers\Admin\CompanyController::class, 'destroy'])->name('companies.destroy');
 });
 
 Route::middleware(['auth', 'role:company'])->prefix('company')->name('company.')->group(function () {

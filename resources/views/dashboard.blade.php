@@ -20,7 +20,14 @@
                             @role('admin')
                                 {{ __('You are an Administrator. You can view all registered users.') }}
                             @elserole('company')
-                                {{ __('You are a Company. You can post new job requirements and view your postings.') }}
+                                @if(auth()->user()->company && !auth()->user()->company->is_verified)
+                                    <span class="text-rose-500 font-bold flex items-center gap-2">
+                                        <span class="w-3.5 h-3.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                        {{ __('Your company account is pending review and approval by the administration team. You will be able to post jobs once approved.') }}
+                                    </span>
+                                @else
+                                    {{ __('You are a Company. You can post new job requirements and view your postings.') }}
+                                @endif
                             @else
                                 @if(auth()->user()->application_status === 'pending')
                                     <span class="text-amber-500 dark:text-amber-400 font-medium">{{ __('Your request is pending review by the administration team.') }}</span>
@@ -36,7 +43,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @role('admin')
                     <!-- Stat Cards -->
-                    <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-6 mb-2">
+                    <div class="lg:col-span-3 grid grid-cols-2 lg:grid-cols-5 gap-6 mb-2">
                         <div class="glass-panel p-6 flex items-center justify-between border-indigo-500/30">
                             <div>
                                 <p class="text-sm font-medium text-slate-400">{{ __('New Users (This Month)') }}</p>
@@ -58,9 +65,18 @@
                             </div>
                             <div class="bg-sky-500/20 p-3 rounded-lg text-sky-400"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
                         </div>
+                        <div class="glass-panel p-6 flex items-center justify-between {{ ($stats['pending_companies_count'] ?? 0) > 0 ? 'border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.15)]' : 'border-rose-500/30' }}">
+                            <div>
+                                <p class="text-sm font-medium text-slate-400">{{ __('Pending Companies') }}</p>
+                                <p class="text-3xl font-bold {{ ($stats['pending_companies_count'] ?? 0) > 0 ? 'text-rose-400 font-black animate-pulse' : 'text-white' }} mt-1">{{ $stats['pending_companies_count'] ?? 0 }}</p>
+                            </div>
+                            <div class="bg-rose-500/20 p-3 rounded-lg text-rose-400">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            </div>
+                        </div>
                         <div class="glass-panel p-6 flex items-center justify-between border-amber-500/30">
                             <div>
-                                <p class="text-sm font-medium text-slate-400">{{ __('Total Users') }}</p>
+                                <p class="text-sm font-medium text-slate-400">{{ __('Total Candidates') }}</p>
                                 <p class="text-3xl font-bold text-white mt-1">{{ $stats['total_users'] ?? 0 }}</p>
                             </div>
                             <div class="bg-amber-500/20 p-3 rounded-lg text-amber-400"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div>
@@ -89,15 +105,72 @@
                         <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{{ __('View Candidates / Advanced Search') }}</h4>
                         <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{!! __('Filter by Religion, Location & Status &rarr;') !!}</span>
                     </a>
+
+                    <!-- Pending Company Approvals Table -->
+                    @if($pendingCompanies->isNotEmpty())
+                    <div class="lg:col-span-3 glass-panel p-6 mt-6">
+                        <h4 class="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                            {{ __('Pending Company Approvals') }}
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full ltr:text-left rtl:text-right border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-700/50 text-slate-400 bg-slate-800/30 text-xs">
+                                        <th class="p-3 font-semibold">{{ __('Company Name') }}</th>
+                                        <th class="p-3 font-semibold">{{ __('Industry') }}</th>
+                                        <th class="p-3 font-semibold">{{ __('Location') }}</th>
+                                        <th class="p-3 font-semibold">{{ __('Register Date') }}</th>
+                                        <th class="p-3 font-semibold text-center">{{ __('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800 text-sm">
+                                    @foreach($pendingCompanies as $company)
+                                    <tr class="hover:bg-slate-800/30 transition">
+                                        <td class="p-3 font-medium text-white">{{ $company->name }}</td>
+                                        <td class="p-3 text-slate-300">{{ $company->industry }}</td>
+                                        <td class="p-3 text-slate-300">{{ $company->location }}</td>
+                                        <td class="p-3 text-slate-400">{{ $company->created_at->format('M d, Y') }}</td>
+                                        <td class="p-3 text-center">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <form action="{{ route('admin.companies.verify', $company) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                                        {{ __('Approve') }}
+                                                    </button>
+                                                </form>
+                                                <a href="{{ route('admin.companies.index') }}" class="text-xs text-indigo-400 hover:underline">
+                                                    {{ __('Details') }}
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @endif
                 @elserole('company')
                     <!-- Company Post Job -->
-                    <a href="{{ route('company.jobs.create') }}" class="glass-panel p-6 flex flex-col justify-center items-center text-center group">
-                        <div class="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform duration-300">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    @if(auth()->user()->company && !auth()->user()->company->is_verified)
+                        <div class="glass-panel p-6 flex flex-col justify-center items-center text-center opacity-50 cursor-not-allowed border-rose-500/30">
+                            <div class="bg-slate-800/80 text-slate-500 p-3 rounded-full mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            </div>
+                            <h4 class="text-lg font-bold text-slate-500 mb-2">{{ __('Post New Requirement (Locked)') }}</h4>
+                            <span class="text-xs text-rose-500 font-bold uppercase tracking-wider">{{ __('Pending Account Approval') }}</span>
                         </div>
-                        <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{{ __('Post New Requirement') }}</h4>
-                        <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">{!! __('Add Job Details &rarr;') !!}</span>
-                    </a>
+                    @else
+                        <a href="{{ route('company.jobs.create') }}" class="glass-panel p-6 flex flex-col justify-center items-center text-center group">
+                            <div class="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            </div>
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{{ __('Post New Requirement') }}</h4>
+                            <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">{!! __('Add Job Details &rarr;') !!}</span>
+                        </a>
+                    @endif
                     
                     <!-- Company View Jobs -->
                     <a href="{{ route('company.jobs.index') }}" class="glass-panel p-6 flex flex-col justify-center items-center text-center group">

@@ -17,12 +17,17 @@ class DashboardController extends Controller
         $stats = [];
         $chartData = [];
 
+        $pendingCompanies = collect();
+
         if ($user->hasRole('admin')) {
             $stats['total_users'] = User::role('seeker')->count();
             $stats['new_users_this_month'] = User::role('seeker')->whereMonth('created_at', Carbon::now()->month)->count();
             $stats['total_jobs'] = Job::count();
             $stats['active_jobs'] = Job::where('status', 'open')->count();
             $stats['total_companies'] = Company::count();
+            $stats['pending_companies_count'] = Company::where('is_verified', false)->count();
+
+            $pendingCompanies = Company::where('is_verified', false)->with('user')->latest()->take(5)->get();
 
             // Last 7 days user registrations
             $dates = collect();
@@ -42,6 +47,6 @@ class DashboardController extends Controller
             $chartData['company_jobs_count'] = $topCompanies->pluck('jobs_count');
         }
 
-        return view('dashboard', compact('stats', 'chartData'));
+        return view('dashboard', compact('stats', 'chartData', 'pendingCompanies'));
     }
 }

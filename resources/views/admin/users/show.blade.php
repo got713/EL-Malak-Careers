@@ -22,6 +22,30 @@
                     </div>
                 </div>
 
+                <!-- Candidate Nomination Stats Panel -->
+                <div class="grid grid-cols-3 gap-4 mb-6 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+                    <div class="text-center">
+                        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{{ __('Nominated Jobs') }}</span>
+                        <span class="text-2xl font-bold text-indigo-400">{{ $user->applications->count() }}</span>
+                    </div>
+                    <div class="text-center border-x border-slate-700/50">
+                        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{{ __('Accepted Jobs') }}</span>
+                        <span class="text-2xl font-bold text-emerald-400">{{ $user->applications->where('status', 'accepted')->count() }}</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{{ __('Did Interview?') }}</span>
+                        @if($user->applications->whereIn('status', ['interview', 'shortlisted', 'accepted'])->isNotEmpty())
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 mt-1">
+                                {{ __('Yes') }}
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-500/10 text-slate-400 border border-slate-500/20 mt-1">
+                                {{ __('No') }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
+
                 <h3 class="text-xl font-bold text-white border-b border-slate-700/50 pb-4 mb-6">{{ __('Personal Information') }}</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -237,6 +261,68 @@
                 </div>
             </div>
             @endif
+
+            <!-- Nominations & Applications History -->
+            <div class="glass-card rounded-2xl p-8">
+                <h3 class="text-xl font-bold text-white border-b border-slate-700/50 pb-4 mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    {{ __('Nominations & Applications History') }}
+                </h3>
+                @if($user->applications->isNotEmpty())
+                    <div class="overflow-x-auto">
+                        <table class="w-full ltr:text-left rtl:text-right border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-700/50 text-slate-400 bg-slate-800/30 text-xs">
+                                    <th class="p-3 font-semibold">{{ __('Job Title') }}</th>
+                                    <th class="p-3 font-semibold">{{ __('Company Name') }}</th>
+                                    <th class="p-3 font-semibold">{{ __('Application Date') }}</th>
+                                    <th class="p-3 font-semibold text-center">{{ __('Status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800 text-sm">
+                                @foreach($user->applications as $application)
+                                <tr class="hover:bg-slate-800/30 transition">
+                                    <td class="p-3">
+                                        @if($application->job)
+                                            <span class="text-white font-medium">{{ $application->job->title }}</span>
+                                        @else
+                                            <span class="text-slate-500 font-medium">{{ __('Deleted Job') }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="p-3 text-slate-300">
+                                        {{ $application->job && $application->job->company ? $application->job->company->name : 'N/A' }}
+                                    </td>
+                                    <td class="p-3 text-slate-400">
+                                        {{ $application->applied_at ? \Carbon\Carbon::parse($application->applied_at)->format('M d, Y') : 'N/A' }}
+                                    </td>
+                                    <td class="p-3 text-center">
+                                        @if($application->status === 'pending')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                {{ __('Under Review') }}
+                                            </span>
+                                        @elseif($application->status === 'accepted')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                {{ __('Accepted') }}
+                                            </span>
+                                        @elseif($application->status === 'rejected')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                                                {{ __('Rejected') }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                                                {{ ucfirst($application->status) }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <p class="text-slate-400 text-sm">{{ __('This candidate has not been nominated for any jobs yet.') }}</p>
+                @endif
+            </div>
 
             <!-- Admin Private Rating & Evaluation Notes Card -->
             <div class="glass-card rounded-2xl p-8 border-2 border-amber-500/30">

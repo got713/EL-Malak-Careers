@@ -40,7 +40,9 @@ class FileDownloadController extends Controller
         $safePath = ltrim(str_replace(['../', '..\\'], '', $resume->file_path), '/\\');
 
         $extension = pathinfo($resume->original_name ?: $safePath, PATHINFO_EXTENSION) ?: 'pdf';
-        $downloadName = preg_replace('/[^\w\s\d\-_~]/u', '', $resume->original_name) ?: 'CV_' . $resume->id . '.' . $extension;
+        $baseName = pathinfo($resume->original_name ?: 'CV_' . $resume->id, PATHINFO_FILENAME);
+        $cleanBase = preg_replace('/[^\w\s\d\-_~]/u', '', $baseName) ?: 'CV_' . $resume->id;
+        $downloadName = $cleanBase . '.' . $extension;
 
         if (Storage::disk('local')->exists($safePath)) {
             return Storage::disk('local')->download($safePath, $downloadName);

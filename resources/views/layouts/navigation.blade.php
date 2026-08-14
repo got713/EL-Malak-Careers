@@ -18,6 +18,12 @@
                     <a href="{{ route('admin.jobs.index') }}" class="nav-link {{ request()->routeIs('admin.jobs.*') ? 'nav-link-active' : '' }} inline-flex items-center pt-1 border-b-2 border-transparent">
                         {{ __('Jobs') }}
                     </a>
+                    <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'nav-link-active' : '' }} inline-flex items-center pt-1 border-b-2 border-transparent">
+                        {{ __('Candidates') }}
+                    </a>
+                    <a href="{{ route('admin.companies.index') }}" class="nav-link {{ request()->routeIs('admin.companies.*') ? 'nav-link-active' : '' }} inline-flex items-center pt-1 border-b-2 border-transparent">
+                        {{ __('Companies') }}
+                    </a>
                     @endrole
                     @endauth
                 </div>
@@ -148,6 +154,12 @@
             @role('admin')
             <x-responsive-nav-link :href="route('admin.jobs.index')" :active="request()->routeIs('admin.jobs.*')">
                 {{ __('Jobs') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                {{ __('Candidates') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.companies.index')" :active="request()->routeIs('admin.companies.*')">
+                {{ __('Companies') }}
             </x-responsive-nav-link>
             @endrole
             @endauth
