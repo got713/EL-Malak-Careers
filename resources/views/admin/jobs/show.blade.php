@@ -197,19 +197,19 @@
                             <!-- Actions (CV & Rec Letter) -->
                             <div class="flex flex-col gap-3 w-full xl:w-[220px] z-10 border-t xl:border-t-0 xl:ltr:border-l xl:rtl:border-r border-slate-700/50 pt-6 xl:pt-0 xl:ltr:pl-6 xl:rtl:pr-6">
                                 @if($application->resume_id && $candidate->resumes->where('id', $application->resume_id)->first())
-                                    <a href="{{ asset('storage/' . $candidate->resumes->where('id', $application->resume_id)->first()->file_path) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 text-white shadow-[0_4px_15px_rgba(71,85,105,0.3)] hover:shadow-[0_6px_20px_rgba(71,85,105,0.4)] px-5 py-2.5 rounded-xl text-sm font-bold transition-all transform hover:-translate-y-0.5">
+                                    <a href="{{ route('resumes.download', $candidate->resumes->where('id', $application->resume_id)->first()) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 text-white shadow-[0_4px_15px_rgba(71,85,105,0.3)] hover:shadow-[0_6px_20px_rgba(71,85,105,0.4)] px-5 py-2.5 rounded-xl text-sm font-bold transition-all transform hover:-translate-y-0.5">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         {{ __('View CV') }}
                                     </a>
                                 @elseif($candidate->resumes->count() > 0)
-                                    <a href="{{ asset('storage/' . $candidate->resumes->sortByDesc('created_at')->first()->file_path) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 text-white shadow-[0_4px_15px_rgba(71,85,105,0.3)] hover:shadow-[0_6px_20px_rgba(71,85,105,0.4)] px-5 py-2.5 rounded-xl text-sm font-bold transition-all transform hover:-translate-y-0.5">
+                                    <a href="{{ route('resumes.download', $candidate->resumes->sortByDesc('created_at')->first()) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 text-white shadow-[0_4px_15px_rgba(71,85,105,0.3)] hover:shadow-[0_6px_20px_rgba(71,85,105,0.4)] px-5 py-2.5 rounded-xl text-sm font-bold transition-all transform hover:-translate-y-0.5">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         {{ __('View CV') }}
                                     </a>
                                 @endif
                                 
                                 @if(auth()->user()?->hasRole('admin') && $candidate->recommendation_letter)
-                                    <a href="{{ asset('storage/' . $candidate->recommendation_letter) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors">
+                                    <a href="{{ route('users.recommendation.download', $candidate) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 01-2-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         {{ __('Recommendation Letter') }}
                                     </a>

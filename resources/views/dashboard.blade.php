@@ -253,7 +253,7 @@
                                     <p class="text-sm font-bold text-indigo-900 dark:text-indigo-300 truncate px-2" title="{{ $resume->original_name }}">{{ $resume->original_name }}</p>
                                     <p class="text-xs text-indigo-600/70 dark:text-indigo-400/70 mt-1">{{ $resume->created_at->diffForHumans() }}</p>
                                 </div>
-                                <a href="{{ asset('storage/' . $resume->file_path) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-indigo-500/30">
+                                <a href="{{ route('resumes.download', $resume) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-indigo-500/30">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     {{ __('Download CV') }}
                                 </a>
