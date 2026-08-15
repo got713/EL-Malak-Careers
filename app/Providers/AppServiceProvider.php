@@ -28,15 +28,9 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Password::defaults(function () {
-            $rule = Password::min(12)
+            return Password::min(8)
                 ->letters()
-                ->mixedCase()
-                ->numbers()
-                ->symbols();
-
-            return $this->app->environment('production')
-                ? $rule->uncompromised()
-                : $rule;
+                ->mixedCase();
         });
     }
 }

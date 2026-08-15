@@ -180,38 +180,14 @@ class SecurityHardeningTest extends TestCase
         $response->assertSessionHasErrors('password');
     }
 
-    public function test_password_without_number_is_rejected()
+    public function test_password_shorter_than_8_chars_is_rejected()
     {
         $response = $this->post('/register', [
             'first_name' => 'Test',
             'last_name' => 'User',
-            'email' => 'nonum@test.com',
-            'password' => 'NoNumbersHere!!x',
-            'password_confirmation' => 'NoNumbersHere!!x',
-        ]);
-        $response->assertSessionHasErrors('password');
-    }
-
-    public function test_password_without_special_character_is_rejected()
-    {
-        $response = $this->post('/register', [
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'email' => 'nospecial@test.com',
-            'password' => 'NoSpecialChar1x2',
-            'password_confirmation' => 'NoSpecialChar1x2',
-        ]);
-        $response->assertSessionHasErrors('password');
-    }
-
-    public function test_password_shorter_than_12_chars_is_rejected()
-    {
-        $response = $this->post('/register', [
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'email' => 'short12@test.com',
-            'password' => 'Sh0rt!xY',
-            'password_confirmation' => 'Sh0rt!xY',
+            'email' => 'short8@test.com',
+            'password' => 'Short1x',
+            'password_confirmation' => 'Short1x',
         ]);
         $response->assertSessionHasErrors('password');
     }
