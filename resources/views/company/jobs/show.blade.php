@@ -457,7 +457,7 @@
                                     <form action="{{ route('company.applications.status', $application) }}" method="POST" class="w-full">
                                         @csrf
                                         @method('PATCH')
-                                        <select name="status" onchange="this.form.submit()" class="w-full bg-[#081B29] border border-slate-700 rounded-lg text-xs text-slate-300 py-1.5 focus:outline-none focus:border-indigo-500">
+                                        <select name="status" onchange="if(this.value==='interview'){window.dispatchEvent(new CustomEvent('open-modal',{detail:'interview-{{ $application->id }}'})); this.value='{{ $application->status }}';} else { this.form.submit(); }" class="w-full bg-[#081B29] border border-slate-700 rounded-lg text-xs text-slate-300 py-1.5 focus:outline-none focus:border-indigo-500">
                                             <option value="pending" {{ $application->status === 'pending' ? 'selected' : '' }}>{{ __('Under Review') }}</option>
                                             <option value="interview" {{ $application->status === 'interview' ? 'selected' : '' }}>{{ __('Interview') }}</option>
                                             <option value="shortlisted" {{ $application->status === 'shortlisted' ? 'selected' : '' }}>{{ __('Shortlisted') }}</option>
@@ -465,7 +465,74 @@
                                             <option value="rejected" {{ $application->status === 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
                                         </select>
                                     </form>
+
+                                    @if($application->interview)
+                                        <div class="mt-2 pt-2 border-t border-slate-700/50 text-[10px] text-slate-400 space-y-0.5">
+                                            <div class="font-bold text-indigo-300">{{ $application->interview->type === 'online' ? __('Online Interview') : __('In-Person Interview') }}</div>
+                                            <div>{{ $application->interview->scheduled_at->translatedFormat('d M Y — h:i A') }}</div>
+                                        </div>
+                                    @endif
+
+                                    <button type="button" x-data="" x-on:click.prevent="$dispatch('open-modal', 'interview-{{ $application->id }}')" class="mt-2 w-full text-[10px] font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
+                                        {{ $application->interview ? __('Reschedule Interview') : __('Schedule Interview') }}
+                                    </button>
                                 </div>
+
+                                <x-modal name="interview-{{ $application->id }}" maxWidth="md">
+                                    <form action="{{ route('company.applications.interview', $application) }}" method="POST" class="p-6" x-data="{ type: '{{ $application->interview->type ?? 'online' }}' }">
+                                        @csrf
+                                        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                                            {{ __('Schedule Interview') }} — {{ $candidate->name }}
+                                        </h2>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                            {{ __('The candidate will receive an email with these details.') }}
+                                        </p>
+
+                                        <div class="mt-4 grid grid-cols-2 gap-4">
+                                            <div>
+                                                <x-input-label for="interview_date_{{ $application->id }}" value="{{ __('Date') }}" />
+                                                <x-text-input id="interview_date_{{ $application->id }}" name="interview_date" type="date" class="mt-1 block w-full" min="{{ now()->format('Y-m-d') }}" value="{{ $application->interview?->scheduled_at?->format('Y-m-d') }}" required />
+                                            </div>
+                                            <div>
+                                                <x-input-label for="interview_time_{{ $application->id }}" value="{{ __('Time') }}" />
+                                                <x-text-input id="interview_time_{{ $application->id }}" name="interview_time" type="time" class="mt-1 block w-full" value="{{ $application->interview?->scheduled_at?->format('H:i') }}" required />
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <x-input-label value="{{ __('Interview Type') }}" />
+                                            <div class="mt-1 flex gap-4">
+                                                <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                                    <input type="radio" name="type" value="online" x-model="type" {{ ($application->interview->type ?? 'online') === 'online' ? 'checked' : '' }}>
+                                                    {{ __('Online') }}
+                                                </label>
+                                                <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                                    <input type="radio" name="type" value="in-person" x-model="type" {{ ($application->interview->type ?? '') === 'in-person' ? 'checked' : '' }}>
+                                                    {{ __('In-Person') }}
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <x-input-label for="location_link_{{ $application->id }}" value="{{ __('Meeting Link') }}" x-text="type === 'online' ? '{{ __('Meeting Link') }}' : '{{ __('Location / Address') }}'" />
+                                            <x-text-input id="location_link_{{ $application->id }}" name="location_link" type="text" class="mt-1 block w-full" :placeholder="__('e.g. https://meet.google.com/xyz or the office address')" value="{{ $application->interview->location_link ?? '' }}" required />
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <x-input-label for="notes_{{ $application->id }}" value="{{ __('Additional Notes (optional)') }}" />
+                                            <textarea id="notes_{{ $application->id }}" name="notes" rows="2" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">{{ $application->interview->notes ?? '' }}</textarea>
+                                        </div>
+
+                                        <div class="mt-6 flex justify-end gap-3">
+                                            <x-secondary-button type="button" x-on:click="$dispatch('close')">
+                                                {{ __('Cancel') }}
+                                            </x-secondary-button>
+                                            <x-primary-button>
+                                                {{ __('Schedule & Notify Candidate') }}
+                                            </x-primary-button>
+                                        </div>
+                                    </form>
+                                </x-modal>
 
                                 @if($application->resume_id && $candidate->resumes->where('id', $application->resume_id)->first())
                                     <a href="{{ route('resumes.download', $candidate->resumes->where('id', $application->resume_id)->first()) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-400 hover:to-cyan-400 text-white shadow-[0_4px_15px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.4)] px-5 py-2.5 rounded-xl text-sm font-bold transition-all transform hover:-translate-y-0.5">

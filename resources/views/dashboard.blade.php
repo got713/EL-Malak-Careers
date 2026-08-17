@@ -42,6 +42,64 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @role('admin')
+                    <!-- Server Cache Utility -->
+                    <div class="lg:col-span-3 flex justify-end">
+                        <form action="{{ route('admin.cache.clear') }}" method="POST" onsubmit="return confirm('{{ __('Clear all server cache now?') }}');">
+                            @csrf
+                            <button type="submit" class="flex items-center gap-2 bg-slate-800/70 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                {{ __('Clear Server Cache') }}
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Pending Company Approvals Table (shown first: needs urgent admin action) -->
+                    @if($pendingCompanies->isNotEmpty())
+                    <div class="lg:col-span-3 glass-panel p-6">
+                        <h4 class="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                            {{ __('Pending Company Approvals') }}
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full ltr:text-left rtl:text-right border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-700/50 text-slate-400 bg-slate-800/30 text-xs">
+                                        <th class="p-3 font-semibold">{{ __('Company Name') }}</th>
+                                        <th class="p-3 font-semibold">{{ __('Industry') }}</th>
+                                        <th class="p-3 font-semibold">{{ __('Location') }}</th>
+                                        <th class="p-3 font-semibold">{{ __('Register Date') }}</th>
+                                        <th class="p-3 font-semibold text-center">{{ __('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800 text-sm">
+                                    @foreach($pendingCompanies as $company)
+                                    <tr class="hover:bg-slate-800/30 transition">
+                                        <td class="p-3 font-medium text-white">{{ $company->name }}</td>
+                                        <td class="p-3 text-slate-300">{{ $company->industry }}</td>
+                                        <td class="p-3 text-slate-300">{{ $company->location }}</td>
+                                        <td class="p-3 text-slate-400">{{ $company->created_at->format('M d, Y') }}</td>
+                                        <td class="p-3 text-center">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <form action="{{ route('admin.companies.verify', $company) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                                        {{ __('Approve') }}
+                                                    </button>
+                                                </form>
+                                                <a href="{{ route('admin.companies.index') }}" class="text-xs text-indigo-400 hover:underline">
+                                                    {{ __('Details') }}
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Stat Cards -->
                     <div class="lg:col-span-3 grid grid-cols-2 lg:grid-cols-5 gap-6 mb-2">
                         <div class="glass-panel p-6 flex items-center justify-between border-indigo-500/30">
@@ -106,52 +164,6 @@
                         <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{!! __('Filter by Religion, Location & Status &rarr;') !!}</span>
                     </a>
 
-                    <!-- Pending Company Approvals Table -->
-                    @if($pendingCompanies->isNotEmpty())
-                    <div class="lg:col-span-3 glass-panel p-6 mt-6">
-                        <h4 class="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
-                            {{ __('Pending Company Approvals') }}
-                        </h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full ltr:text-left rtl:text-right border-collapse">
-                                <thead>
-                                    <tr class="border-b border-slate-700/50 text-slate-400 bg-slate-800/30 text-xs">
-                                        <th class="p-3 font-semibold">{{ __('Company Name') }}</th>
-                                        <th class="p-3 font-semibold">{{ __('Industry') }}</th>
-                                        <th class="p-3 font-semibold">{{ __('Location') }}</th>
-                                        <th class="p-3 font-semibold">{{ __('Register Date') }}</th>
-                                        <th class="p-3 font-semibold text-center">{{ __('Actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-800 text-sm">
-                                    @foreach($pendingCompanies as $company)
-                                    <tr class="hover:bg-slate-800/30 transition">
-                                        <td class="p-3 font-medium text-white">{{ $company->name }}</td>
-                                        <td class="p-3 text-slate-300">{{ $company->industry }}</td>
-                                        <td class="p-3 text-slate-300">{{ $company->location }}</td>
-                                        <td class="p-3 text-slate-400">{{ $company->created_at->format('M d, Y') }}</td>
-                                        <td class="p-3 text-center">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <form action="{{ route('admin.companies.verify', $company) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                                                        {{ __('Approve') }}
-                                                    </button>
-                                                </form>
-                                                <a href="{{ route('admin.companies.index') }}" class="text-xs text-indigo-400 hover:underline">
-                                                    {{ __('Details') }}
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    @endif
                 @elserole('company')
                     <!-- Company Post Job -->
                     @if(auth()->user()->company && !auth()->user()->company->is_verified)

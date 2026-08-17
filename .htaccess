@@ -16,6 +16,11 @@
 </FilesMatch>
 
 # Block framework directories
-RedirectMatch 403 ^/(app|bootstrap|config|database|resources|routes|storage|tests|vendor|node_modules)(/.*)?$
+# NOTE: "storage" is intentionally NOT in this list. The public "storage" URL
+# is Laravel's storage:link symlink (public/storage -> storage/app/public),
+# which is meant to be publicly reachable and is what serves user avatars and
+# any other files on the "public" disk. Blocking it here caused all avatar
+# images (and anything else under the public disk) to return 403.
+RedirectMatch 403 ^/(app|bootstrap|config|database|resources|routes|tests|vendor|node_modules)(/.*)?$
 
 Options -Indexes

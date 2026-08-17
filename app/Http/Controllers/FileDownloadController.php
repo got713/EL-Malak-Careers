@@ -10,6 +10,33 @@ use Illuminate\Support\Facades\Storage;
 
 class FileDownloadController extends Controller
 {
+    /**
+     * PDFs are opened inline (viewable in the browser tab) since that's what
+     * "View CV" buttons imply; other formats (doc/docx/images) can't be
+     * rendered by the browser so they still force a download.
+     */
+    private function serveFile(string $disk, string $path, string $downloadName, string $extension)
+    {
+        $storage = Storage::disk($disk);
+
+        if (strtolower($extension) === 'pdf') {
+            return $storage->response($path, $downloadName);
+        }
+
+        return $storage->download($path, $downloadName);
+    }
+
+    private function serveRealPath(string $realPath, string $downloadName, string $extension)
+    {
+        if (strtolower($extension) === 'pdf') {
+            return response()->file($realPath, [
+                'Content-Disposition' => 'inline; filename="'.$downloadName.'"',
+            ]);
+        }
+
+        return response()->download($realPath, $downloadName);
+    }
+
     public function downloadResume(Request $request, Resume $resume)
     {
         $user = auth()->user();
@@ -45,11 +72,11 @@ class FileDownloadController extends Controller
         $downloadName = $cleanBase . '.' . $extension;
 
         if (Storage::disk('local')->exists($safePath)) {
-            return Storage::disk('local')->download($safePath, $downloadName);
+            return $this->serveFile('local', $safePath, $downloadName, $extension);
         }
 
         if (Storage::disk('public')->exists($safePath)) {
-            return Storage::disk('public')->download($safePath, $downloadName);
+            return $this->serveFile('public', $safePath, $downloadName, $extension);
         }
 
         $realPath = storage_path('app/private/' . $safePath);
@@ -61,7 +88,7 @@ class FileDownloadController extends Controller
         }
 
         if (file_exists($realPath) && is_file($realPath)) {
-            return response()->download($realPath, $downloadName);
+            return $this->serveRealPath($realPath, $downloadName, $extension);
         }
 
         abort(404, 'File not found.');
@@ -86,11 +113,11 @@ class FileDownloadController extends Controller
         $downloadName = 'Recommendation_' . $user->id . '.' . $extension;
 
         if (Storage::disk('local')->exists($safePath)) {
-            return Storage::disk('local')->download($safePath, $downloadName);
+            return $this->serveFile('local', $safePath, $downloadName, $extension);
         }
 
         if (Storage::disk('public')->exists($safePath)) {
-            return Storage::disk('public')->download($safePath, $downloadName);
+            return $this->serveFile('public', $safePath, $downloadName, $extension);
         }
 
         $realPath = storage_path('app/private/' . $safePath);
@@ -102,7 +129,7 @@ class FileDownloadController extends Controller
         }
 
         if (file_exists($realPath) && is_file($realPath)) {
-            return response()->download($realPath, $downloadName);
+            return $this->serveRealPath($realPath, $downloadName, $extension);
         }
 
         abort(404, 'File not found.');

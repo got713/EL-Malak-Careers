@@ -196,6 +196,20 @@
 
                             <!-- Actions (CV & Rec Letter) -->
                             <div class="flex flex-col gap-3 w-full xl:w-[220px] z-10 border-t xl:border-t-0 xl:ltr:border-l xl:rtl:border-r border-slate-700/50 pt-6 xl:pt-0 xl:ltr:pl-6 xl:rtl:pr-6">
+                                @if($application->interview)
+                                    <div class="bg-slate-800/50 rounded-xl p-3 border border-indigo-500/30 text-[11px] text-slate-300 space-y-1">
+                                        <div class="font-bold text-indigo-300 flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            {{ $application->interview->type === 'online' ? __('Online Interview') : __('In-Person Interview') }}
+                                        </div>
+                                        <div>{{ $application->interview->scheduled_at->translatedFormat('d M Y — h:i A') }}</div>
+                                        <div class="text-slate-400 truncate" title="{{ $application->interview->location_link }}">{{ $application->interview->location_link }}</div>
+                                        @if($application->interview->notes)
+                                            <div class="text-slate-500 italic">{{ $application->interview->notes }}</div>
+                                        @endif
+                                    </div>
+                                @endif
+
                                 @if($application->resume_id && $candidate->resumes->where('id', $application->resume_id)->first())
                                     <a href="{{ route('resumes.download', $candidate->resumes->where('id', $application->resume_id)->first()) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 text-white shadow-[0_4px_15px_rgba(71,85,105,0.3)] hover:shadow-[0_6px_20px_rgba(71,85,105,0.4)] px-5 py-2.5 rounded-xl text-sm font-bold transition-all transform hover:-translate-y-0.5">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>

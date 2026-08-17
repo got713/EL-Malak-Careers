@@ -61,7 +61,7 @@ class JobController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $job->load(['applications.user.resumes', 'applications.user.userSkills.skill']);
+        $job->load(['applications.user.resumes', 'applications.user.userSkills.skill', 'applications.interview']);
         return view('company.jobs.show', compact('job'));
     }
 

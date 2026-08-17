@@ -58,6 +58,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('/companies/{company}/verify', [\App\Http\Controllers\Admin\CompanyController::class, 'verify'])->name('companies.verify');
     Route::patch('/companies/{company}/reject', [\App\Http\Controllers\Admin\CompanyController::class, 'reject'])->name('companies.reject');
     Route::delete('/companies/{company}', [\App\Http\Controllers\Admin\CompanyController::class, 'destroy'])->name('companies.destroy');
+
+    Route::post('/clear-cache', [\App\Http\Controllers\Admin\CacheController::class, 'clear'])->name('cache.clear');
 });
 
 Route::middleware(['auth', 'role:company'])->prefix('company')->name('company.')->group(function () {
@@ -70,6 +72,7 @@ Route::middleware(['auth', 'role:company'])->prefix('company')->name('company.')
     
     // Application Status Update
     Route::patch('/applications/{application}/status', [\App\Http\Controllers\Company\ApplicationController::class, 'updateStatus'])->name('applications.status');
+    Route::post('/applications/{application}/interview', [\App\Http\Controllers\Company\ApplicationController::class, 'scheduleInterview'])->name('applications.interview');
 });
 
 Route::get('/auth/google', [\App\Http\Controllers\Auth\SocialLoginController::class, 'redirectToGoogle'])->name('auth.google')->middleware('throttle:10,1');

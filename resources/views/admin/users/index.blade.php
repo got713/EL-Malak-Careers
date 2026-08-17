@@ -207,6 +207,9 @@
                                         <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">{{ __('Pending') }}</span>
                                     @else
                                         <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{{ __('Reviewed') }}</span>
+                                        @if($user->reviewedBy)
+                                            <span class="block mt-1 text-[10px] text-slate-500">{{ __('by') }} {{ $user->reviewedBy->name }}</span>
+                                        @endif
                                     @endif
                                 </td>
                                 <td class="p-4">

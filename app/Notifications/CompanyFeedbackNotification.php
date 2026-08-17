@@ -39,7 +39,13 @@ class CompanyFeedbackNotification extends Notification
 
     public function toDatabase(object $notifiable): array
     {
-        $statusText = $this->status === 'accepted' ? 'قبول' : 'رفض';
+        $statusText = match ($this->status) {
+            'accepted' => 'قبول',
+            'rejected' => 'رفض',
+            'interview' => 'جدولة مقابلة مع',
+            'shortlisted' => 'ترشيح مبدئي (Shortlist) لـ',
+            default => 'تحديث حالة',
+        };
         return [
             'type' => 'company_feedback',
             'job_id' => $this->jobId,

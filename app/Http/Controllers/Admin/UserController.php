@@ -44,14 +44,14 @@ class UserController extends Controller
         $reviewedUsersCount = \Illuminate\Support\Facades\Cache::remember('seekers_reviewed_count', 900, fn() => User::role('seeker')->where('application_status', 'reviewed')->count());
         $cvCount = \Illuminate\Support\Facades\Cache::remember('resumes_total_count', 900, fn() => Resume::count());
 
-        $users = $query->with('resumes')->withCount('applications')->latest()->paginate(15)->withQueryString();
+        $users = $query->with(['resumes', 'reviewedBy'])->withCount('applications')->latest()->paginate(15)->withQueryString();
         
         return view('admin.users.index', compact('users', 'totalUsersCount', 'pendingUsersCount', 'reviewedUsersCount', 'cvCount'));
     }
 
     public function show(User $user)
     {
-        $user->load(['resumes', 'applications.job.company']);
+        $user->load(['resumes', 'applications.job.company', 'reviewedBy', 'notesUpdatedBy']);
         return view('admin.users.show', compact('user'));
     }
 
@@ -100,7 +100,10 @@ class UserController extends Controller
 
     public function markReviewed(User $user)
     {
-        $user->forceFill(['application_status' => 'reviewed'])->save();
+        $user->forceFill([
+            'application_status' => 'reviewed',
+            'reviewed_by' => auth()->id(),
+        ])->save();
         return back()->with('success', __('User application marked as reviewed.'));
     }
 
@@ -114,6 +117,7 @@ class UserController extends Controller
         $user->update([
             'admin_rating' => $request->admin_rating,
             'admin_notes' => $request->admin_notes,
+            'notes_updated_by' => auth()->id(),
         ]);
 
         return back()->with('success', __('Candidate evaluation and private notes updated successfully!'));

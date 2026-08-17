@@ -55,6 +55,10 @@ class User extends Authenticatable
     public function savedJobs() { return $this->hasMany(SavedJob::class); }
     public function userSkills() { return $this->hasMany(UserSkill::class); }
 
+    // Which admin account marked this candidate's application as reviewed / last updated their private notes.
+    public function reviewedBy() { return $this->belongsTo(User::class, 'reviewed_by'); }
+    public function notesUpdatedBy() { return $this->belongsTo(User::class, 'notes_updated_by'); }
+
     public function getNameAttribute()
     {
         return "{$this->first_name} {$this->last_name}";
